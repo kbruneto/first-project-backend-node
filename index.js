@@ -1,22 +1,21 @@
-const express = require('express')
+const express = require('express');
+const uuid = require('uuid');
+const cors = require('cors')
 
-const uuid = require('uuid')
-import cors from 'cors'
-
-const port = 3001
-const app = express()
-app.use(express.json())
+const port = 3001;
+const app = express();
+app.use(express.json());
 app.use(cors())
 
-const orders = []
+const users = []
 
-const checkOrdersID = (request, response, next) => {
+const checkUsersID = (request, response, next) => {
     const {id} = request.params
 
-    const index = orders.findIndex(order => order.id === id)
+    const index = users.findIndex(users => users.id === id)
 
     if(index < 0){
-        return response.status(404).json({error: "Order not found"})
+        return response.status(404).json({error: "User not found"})
     }
 
     request.userIndex = index
@@ -25,50 +24,50 @@ const checkOrdersID = (request, response, next) => {
     next()
 }
 
-app.get('/orders', (request, response) => {
-    return response.json(orders)
+app.get('/users', (request, response) => {
+    return response.json(users)
 })
 
-app.post('/orders', (request, response) => {
-    const {order, clientName, price, status} = request.body
+app.post('/users', (request, response) => {
+    const {user, name, age} = request.body
 
-    const newOrder = { id: uuid.v4(), order, clientName, price, status }
+    const newUser = { id: uuid.v4(), name, age}
 
-    orders.push(newOrder)
+    users.push(newUser)
 
-    return response.status(201).json(orders)
+    return response.status(201).json(users)
 })
 
-app.put('/orders/:id', checkOrdersID, (request, response) => {
+app.put('/users/:id', checkUsersID, (request, response) => {
 
     const index = request.userIndex
 
     const id = request.userId
 
-    const {order, clientName, price, status} = request.body
+    const {user, name, age} = request.body
 
-    const updateOrders = { id, order, clientName, price, status }
+    const updateUsers = { id, name, age}
 
-    orders[index] = updateOrders
+    users[index] = updateUsers
 
-    return response.json(updateOrders)
+    return response.json(updateUsers)
 
 })
 
-app.get('/orders/:id', (request, response) => {
+app.get('/users/:id', (request, response) => {
 
-    const orderResult = orders[index]
+    const userResult = users[index]
 
-    return response.json(orderResult)
+    return response.json(userResult)
 })
 
-app.delete('/orders/:id', checkOrdersID, (request, response) => {
+app.delete('/users/:id', checkUsersID, (request, response) => {
 
     const index = request.userIndex
 
-    orders.splice(index, 1)
+    users.splice(index, 1)
 
-    return response.status(204).json(orders)
+    return response.status(204).json(users)
 })
 
 
